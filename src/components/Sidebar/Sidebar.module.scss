@@ -1,0 +1,24 @@
+.sidebar {
+    padding: 27px  31px 27px 20px;
+    width: 293px;
+    height: 100%;
+}
+
+.title {
+    margin-bottom: 22px;
+    font-weight: 600;
+}
+
+.input {
+    margin-bottom: 22px;
+    padding: 16px;
+    width: 240px;
+    height: 46px;
+    border: solid 1.5px #E9ECEF;
+    border-radius: 8px;
+    font-size: var(--font-size-m)
+}
+
+.text, .input {
+    color: var(--secondary-color);
+}

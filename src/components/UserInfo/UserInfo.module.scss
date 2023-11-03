@@ -1,0 +1,56 @@
+.container {
+    width: 100%;
+    padding: 30px 21px;
+    border-left: 1px solid #DEDEDD;
+    display: flex;
+    align-items: flex-start;
+    gap: 60px;
+}
+
+.about, .name, .title {
+    font-weight: 600;
+}
+
+.about {
+    margin-bottom: 25px;
+}
+
+.name {
+    margin-bottom: 10px;
+    font-size: var(--font-size-l);
+}
+
+.textWrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dataWrapper, .dataWrapperPhone {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    
+}
+
+.dataWrapperPhone {
+    margin-bottom: 20px;
+
+}
+
+.title {
+    margin-right: 10px;
+    font-size: var(--font-size-m);
+}
+
+.textContent {
+    text-align: left;
+}
+
+.text {
+    width: 100%;
+    text-align: center;
+    color: var(--secondary-color);
+}
