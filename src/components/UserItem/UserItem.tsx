@@ -1,5 +1,5 @@
 import cls from "./UserItem.module.scss"
-import Image from "../../assets/imgSmall.svg"
+import Image from "../../assets/ImgSmall.svg"
 import { IUser, selectUser } from "../../redux/slices/usersSlice"
 import { useAppDispatch, useAppSelector } from "../../redux/hooks"
 import { getSelectedUserData } from "../../redux/selectors"
