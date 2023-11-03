@@ -1,4 +1,4 @@
-import Image from "../../assets/imgBig.svg"
+import Image from "../../assets/ImgBig.svg"
 import { useAppSelector } from "../../redux/hooks"
 import { getSelectedUserData } from "../../redux/selectors"
 import cls from "./UserInfo.module.scss"
