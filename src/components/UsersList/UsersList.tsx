@@ -60,7 +60,7 @@ export default function UsersList() {
 
     return (
         <>
-            {users && !error ? (
+            {users?.length && !error ? (
                 users.map((user: IUser) => <UserItem key={user.id} user={user} />)
             ) : start ? (
                 <div className={cls.text}>Ничего не найдено</div>
