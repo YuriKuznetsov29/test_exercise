@@ -1,82 +1,106 @@
-import { useEffect, useState } from "react"
-import { useAppSelector } from "../../redux/hooks"
-import { getUsersData, loadingError, loadingUsers, startSearch } from "../../redux/selectors"
-import { IUser } from "../../redux/slices/usersSlice"
-import { Loader } from "../Loader/Loader"
-import UserItem from "../UserItem/UserItem"
-import Left from "../../assets/ArrowLeft.svg"
-import Right from "../../assets/ArrowRight.svg"
-import cls from "./UsersList.module.scss"
+import { useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import {
+    getUsersCount,
+    getUsersData,
+    loadingError,
+    loadingUsers,
+    startSearch,
+} from "../../redux/selectors";
+import { IUser, clearResults, findUsers } from "../../redux/slices/usersSlice";
+import { Loader } from "../Loader/Loader";
+import UserItem from "../UserItem/UserItem";
+import Left from "../../assets/ArrowLeft.svg";
+import Right from "../../assets/ArrowRight.svg";
+import cls from "./UsersList.module.scss";
 
-const ITEMS_ON_PAGE = 3
+const transformNames = (names: string) => {
+    return names
+        .split(",")
+        .map((name: string) => {
+            if (isNaN(+name)) {
+                return "username=" + name.trim();
+            } else {
+                return "id=" + name.trim();
+            }
+        })
+        .join("&");
+};
 
-export default function UsersList() {
-    const usersData = useAppSelector(getUsersData)
-    const [users, setUsers] = useState<IUser[] | null>(null)
-    const [page, setPage] = useState(0)
-    const [usersQty, setUsersQty] = useState(0)
-    const isLoading = useAppSelector(loadingUsers)
-    const error = useAppSelector(loadingError)
-    const start = useAppSelector(startSearch)
+const ITEMS_ON_PAGE = 4;
+
+interface UsersListProps {
+    searchText: string;
+}
+
+export default function UsersList({ searchText }: UsersListProps) {
+    const [page, setPage] = useState(1);
+    const error = useAppSelector(loadingError);
+    const start = useAppSelector(startSearch);
+
+    const usersData = useAppSelector(getUsersData);
+    const usersCount = useAppSelector(getUsersCount);
+    const isLoading = useAppSelector(loadingUsers);
+
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
-        setUsers(usersData.slice(0, ITEMS_ON_PAGE))
-        setUsersQty(usersData.length)
-    }, [usersData])
-
-    useEffect(() => {
-        if (usersQty - page * ITEMS_ON_PAGE < ITEMS_ON_PAGE) {
-            setUsers(usersData.slice(-ITEMS_ON_PAGE))
+        if (searchText) {
+            dispatch(
+                findUsers({ names: transformNames(searchText), usersLimit: ITEMS_ON_PAGE, page })
+            );
         } else {
-            setUsers(usersData.slice(page * ITEMS_ON_PAGE, (page + 1) * ITEMS_ON_PAGE))
+            dispatch(clearResults());
         }
-    }, [page])
+    }, [searchText, page]);
+
+    const onClickShowNext = () => {
+        if (page < Math.ceil(usersCount / ITEMS_ON_PAGE)) {
+            setPage((prev) => prev + 1);
+        }
+    };
+
+    const onClickShowPrev = () => {
+        if (page > 1) {
+            setPage((prev) => prev - 1);
+        }
+    };
 
     if (isLoading)
         return (
             <div className={cls.container}>
                 <Loader />
             </div>
-        )
+        );
 
     if (error)
         return (
             <div className={cls.container}>
                 <div className={cls.error}>{error}</div>
             </div>
-        )
-
-    const onClickShowNext = () => {
-        if ((page + 1) * ITEMS_ON_PAGE < usersQty) {
-            setPage((prev) => prev + 1)
-        }
-    }
-
-    const onClickShowPrev = () => {
-        if (page * ITEMS_ON_PAGE > 0) {
-            setPage((prev) => prev - 1)
-        }
-    }
+        );
 
     return (
-        <>
-            {users?.length && !error ? (
-                users.map((user: IUser) => <UserItem key={user.id} user={user} />)
-            ) : start ? (
-                <div className={cls.text}>Ничего не найдено</div>
-            ) : (
-                <div className={cls.text}>Начните поиск</div>
-            )}
+        <div className={cls.resultsWrapper}>
+            <div className={cls.results}>
+                {usersData?.length && !error ? (
+                    usersData.map((user: IUser) => <UserItem key={user.id} user={user} />)
+                ) : start ? (
+                    <div className={cls.text}>Ничего не найдено</div>
+                ) : (
+                    <div className={cls.text}>Начните поиск</div>
+                )}
+            </div>
 
-            {usersQty > ITEMS_ON_PAGE && (
+            {usersCount > ITEMS_ON_PAGE && (
                 <div className={cls.btnContainer}>
                     <img className={cls.btn} src={Left} alt="left" onClick={onClickShowPrev} />
                     <div className={cls.pagesNumber}>
-                        {page + 1} / {Math.ceil(usersQty / ITEMS_ON_PAGE)}
+                        {page} / {Math.ceil(usersCount / ITEMS_ON_PAGE)}
                     </div>
                     <img className={cls.btn} src={Right} alt="right" onClick={onClickShowNext} />
                 </div>
             )}
-        </>
-    )
+        </div>
+    );
 }

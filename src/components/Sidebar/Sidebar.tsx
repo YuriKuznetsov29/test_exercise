@@ -1,39 +1,19 @@
-import { useEffect, useState } from "react"
-import { useAppDispatch } from "../../redux/hooks"
-import { clearResults, findUsers, selectUser } from "../../redux/slices/usersSlice"
-import cls from "./Sidebar.module.scss"
-
-import UsersList from "../UsersList/UsersList"
-
-const transformNames = (names: string) => {
-    return names
-        .split(",")
-        .map((name: string) => {
-            if (isNaN(+name)) {
-                return "username=" + name.trim()
-            } else {
-                return "id=" + name.trim()
-            }
-        })
-        .join("&")
-}
+import { useDeferredValue, useState } from "react";
+import { useAppDispatch } from "../../redux/hooks";
+import { selectUser } from "../../redux/slices/usersSlice";
+import UsersList from "../UsersList/UsersList";
+import cls from "./Sidebar.module.scss";
 
 export default function Sidebar() {
-    const [searchText, setSearchText] = useState("")
-    const dispatch = useAppDispatch()
+    const [searchText, setSearchText] = useState("");
+    const dispatch = useAppDispatch();
 
     const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-        dispatch(selectUser(null))
-        setSearchText(e.target.value)
-    }
+        dispatch(selectUser(null));
+        setSearchText(e.target.value);
+    };
 
-    useEffect(() => {
-        if (searchText) {
-            dispatch(findUsers({ names: transformNames(searchText) }))
-        } else {
-            dispatch(clearResults())
-        }
-    }, [searchText])
+    const deferredQuery = useDeferredValue(searchText);
 
     return (
         <div className={cls.sidebar}>
@@ -46,7 +26,7 @@ export default function Sidebar() {
                 placeholder="Введите Id или имя"
             />
             <div className={cls.title}>Результаты</div>
-            <UsersList />
+            <UsersList searchText={deferredQuery} />
         </div>
-    )
+    );
 }
